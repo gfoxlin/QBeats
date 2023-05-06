@@ -1,0 +1,19 @@
+type: log
+paths:
+{{ range $i, $path := .paths }}
+ - {{$path}}
+{{ end }}
+exclude_files: [".gz$"]
+
+processors:
+  # non-ECS: same as json.keys_under_root: false, allows compatibility with non-ecs logs.
+- decode_json_fields:
+    fields: [message]
+    target: 'json'
+- add_fields:
+    target: ""
+    fields:
+      ecs.version: 1.12.0
+    when:
+      not:
+        has_fields: ['ecs.version']
